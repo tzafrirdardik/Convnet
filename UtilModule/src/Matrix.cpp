@@ -616,7 +616,7 @@ namespace GMat {
 		{
 			concurrency::parallel_for(size_t(0), size, [&](size_t i)
 			{
-				float* tmp_img = img.at(i)->GetMatrix();
+				float* tmp_img = img.at((int)i)->GetMatrix();
 				for (int y = lowlimit; y < (row - upperlimit); y++)//single input
 				{
 					for (int x = lowlimit; x < (col - upperlimit); x++)//single input

@@ -706,7 +706,7 @@ namespace GMat {
 
 			delete this->Vec_->back();
 			this->Vec_->pop_back();
-			this->Size_ = this->Vec_->size();
+			this->Size_ = (unsigned int)this->Vec_->size();
 		}
 		void push_back(MySharedPtr* ptr)
 		{
@@ -752,7 +752,7 @@ namespace GMat {
 		{
 			auto it = this->Vec_->begin();
 			this->Vec_->erase(it + From, it + Untill);
-			this->Size_ = this->Vec_->size();
+			this->Size_ = (unsigned int)this->Vec_->size();
 		}
 		void ChangeSize(int Size)
 		{
@@ -856,7 +856,7 @@ namespace GMat {
 
 			delete this->Vec_->back();
 			this->Vec_->pop_back();
-			this->Size_ = this->Vec_->size();
+			this->Size_ = (unsigned int)this->Vec_->size();
 		}
 		void push_back(MyUniquePtr* ptr)
 		{
@@ -902,7 +902,7 @@ namespace GMat {
 		{
 			auto it = this->Vec_->begin();
 			this->Vec_->erase(it + From, it + Untill);
-			this->Size_ = this->Vec_->size();
+			this->Size_ = (unsigned int)this->Vec_->size();
 		}
 		void ChangeSize(int Size)
 		{
