@@ -35,3 +35,8 @@ void Input_layer::Simulate()
 	this->Output_->at(0)->operator=(*this->Stack_Of_Imgs_->back());
 	this->Stack_Of_Imgs_->pop_back();
 }
+
+void Input_layer::SaveWeight()
+{
+
+}

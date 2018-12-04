@@ -10,6 +10,7 @@ Convnet::Convnet()
 	this->Layer_list_ = new std::vector<Layer*>;
 	this->Error_Vec_ = new GMat::Matrix(10, 1, Zeroes);
 	this->Expected_Output_Vec_ = nullptr;
+	this->Total_Error_In_Presentage_ = false;
 	unsigned int row = 32;
 	unsigned int col = 32;
 
@@ -106,17 +107,19 @@ void Convnet::SetImage(WhichData_ data)
 	{
 		if (data == Mnist_)
 			throw exceptionh::Excep_No1("Please choose the amount of images you want to setup.");
-		else
+		else if (data == Custom_)
 			throw exceptionh::Excep_No2("Please insert the directory path.");
+		else
+			throw exceptionh::Excep_No3("Loading 5000 images for testing.");
 	}
 
 	catch (exceptionh::Excep_No1& e)
 	{
-		int num = 0;
-		std::cin >> num;
-		dynamic_cast<Input_layer*>(this->Layer_list_->at(0))->Load_Mnist_Data("C:/Users/gal/source/repos/Convnet_V2/Convnet_V2/src/train-images.idx3-ubyte", num);
-		this->Data_labels_ = new std::vector<float>(num);
-		GMat::read_Mnist_Label("C:/Users/gal/source/repos/Convnet_V2/Convnet_V2/src/train-labels.idx1-ubyte",this->GetDataLabel(), num);
+		//int num = 0;
+		//std::cin >> num;
+		dynamic_cast<Input_layer*>(this->Layer_list_->at(0))->Load_Mnist_Data("C:/Users/gal/source/repos/Convnet_V2/Convnet_V2/src/train-images.idx3-ubyte", 20000);
+		this->Data_labels_ = new std::vector<float>(20000);
+		GMat::read_Mnist_Label("C:/Users/gal/source/repos/Convnet_V2/Convnet_V2/src/train-labels.idx1-ubyte",this->GetDataLabel(), 20000);
 		GenerateExpectedOutput(this->GetDataLabel());
 	}
 
@@ -125,6 +128,14 @@ void Convnet::SetImage(WhichData_ data)
 		std::string str;
 		std::cin >> str;
 		dynamic_cast<Input_layer*>(this->Layer_list_->at(0))->SetImage(str);
+	}
+
+	catch (exceptionh::Excep_No3& e)
+	{
+		dynamic_cast<Input_layer*>(this->Layer_list_->at(0))->Load_Mnist_Data("C:/Users/gal/source/repos/Convnet_V2/Convnet_V2/src/t10k-images.idx3-ubyte", ImageTestLimit);
+		this->Data_labels_ = new std::vector<float>(ImageTestLimit);
+		GMat::read_Mnist_Label("C:/Users/gal/source/repos/Convnet_V2/Convnet_V2/src/t10k-labels.idx1-ubyte", this->GetDataLabel(), ImageTestLimit);
+		GenerateExpectedOutput(this->GetDataLabel());
 	}
 }
 
@@ -255,23 +266,6 @@ void Convnet::Training(unsigned int NumberOfEpoch, unsigned int NumberOfTraining
 		{
 			for (unsigned int SubSubepoch = 0; SubSubepoch < NumberOfImgPerBP; SubSubepoch++)
 			{
-				/*if (this->Data_labels_->back() != 4 && this->Data_labels_->back() != 9 && this->Data_labels_->back() != 0)
-				{
-					for (int i = 0; i < this->Data_labels_->size();i++)
-					{
-						if (this->Data_labels_->back() == 4 || this->Data_labels_->back() == 9 || this->Data_labels_->back() == 0)
-							break;
-						if (this->Data_labels_->size() < 15)
-							break;
-						this->Data_labels_->pop_back();
-						this->Layer_list_->at(0)->GetStackOfImgs().pop_back();
-						this->Expected_Output_Vec_->pop_back();
-					}
-				}
-
-				if (this->Data_labels_->size() < 15)
-					break;
-				*/
 				this->FeedForward();
 				this->BackPropagation();
 				if (SubSubepoch < NumberOfImgPerBP - 1)
@@ -281,13 +275,15 @@ void Convnet::Training(unsigned int NumberOfEpoch, unsigned int NumberOfTraining
 				}
 			}
 
-			if (this->Data_labels_->size() < 15)
-				break;
-
 			this->SetChangeInWeights(average);
 			if ((PrintTime != 0) && (Subepoch % PrintTime == 0))
 			{
 				this->PrintResult(this->GetDataLabel(), epoch + 1, Subepoch + 1);
+				this->Data_labels_->pop_back();
+				this->Expected_Output_Vec_->pop_back();
+			}
+			else
+			{
 				this->Data_labels_->pop_back();
 				this->Expected_Output_Vec_->pop_back();
 			}
@@ -303,18 +299,33 @@ void Convnet::Simulation(unsigned int NumOfSimulations)
 			dynamic_cast<FC_layer*>(this->Layer_list_->at(i))->IsTraining(false);
 	}
 
+	this->SetImage(Mnist_test_);
+	float counter = 0.0f;
 	for (unsigned int i = 0; i < NumOfSimulations; i++)
 	{
 		this->FeedForward();
-		this->PrintResult(this->GetDataLabel(),1,i);
-		this->Expected_Output_Vec_->pop_back();
+		float error = std::abs((*this->Expected_Output_Vec_->back().GetData() - *this->Layer_list_->back()->GetOutputMatrix().front().GetData()).MatrixSumAllElements());
+		if (error > ErrorLimit)
+		{
+			counter += 1.0f;
+		}
 		this->GetDataLabel().pop_back();
+	}
+	counter /= ImageTestLimit;
+	this->Total_Error_In_Presentage_ = (counter > ErrorLimitPresentage) ? false:true;
+	for (unsigned int i = 0; i < this->Size_; i++)
+	{
+		if ((!this->Layer_list_->at(i)->LayerClassification().compare("FC layer")))
+			dynamic_cast<FC_layer*>(this->Layer_list_->at(i))->IsTraining(true);
 	}
 }
 
 void Convnet::SaveWeightsToDataFile()
 {
-
+	for (unsigned int i = (this->Size_ - 1); i > 1; i--)
+	{
+		this->Layer_list_->at(i)->SaveWeight();
+	}
 }
 
 void Convnet::LoadWeightsFromDataFile()
@@ -341,6 +352,11 @@ void Convnet::GenerateExpectedOutput(const std::vector<float>& numbers)
 		default: {(*this->Expected_Output_Vec_->at(i))(9, 0) = 1; break; }
 		}
 	}
+}
+
+bool Convnet::TotalError() const
+{
+	return this->Total_Error_In_Presentage_;
 }
 
 void Convnet::PrintConvnetTopology() const

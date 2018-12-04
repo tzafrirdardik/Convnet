@@ -247,3 +247,17 @@ void Conv_layer::BP(Layer& layer_i, Layer& layer_k, GMat::unique_vector& gradien
 
 	}
 }
+
+void Conv_layer::SaveWeight()
+{
+	unsigned int size = this->Filter_Vec_->GetSize();
+	for (unsigned int i = 0; i < size; i++)
+	{
+		std::string tmp(STR(Conv_layer_weights_size_));
+		tmp.append(STR(size));
+		tmp.append(STR(_));
+		tmp.append(STR(i+1));
+		tmp.append(STR(.txt));
+		this->Filter_Vec_->at(i)->SaveMatrix(tmp);
+	}
+}

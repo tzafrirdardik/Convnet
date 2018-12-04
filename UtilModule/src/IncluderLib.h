@@ -25,7 +25,7 @@
 //======================================
 
 //Which data to load, Mnist pictures or Custom pictures.
-typedef enum { Custom_, Mnist_ } WhichData_;
+typedef enum { Custom_, Mnist_, Mnist_test_} WhichData_;
 
 //Defined parameters for Matrix.
 typedef enum { WithoutZP, WithZP } Padding_;
@@ -43,13 +43,21 @@ typedef enum { Zeroes, Random_Val, Ones, DontCare} ElementValues;
 #define ThirdLimit 2097152 // 128 * 128 * 128. 
 #define FourthLimit 16777216 // 4096 * 4096.
 
+//Defined amount of test images from Mnist.
+#define ImageTestLimit 5000
+
 //Defined Convnet parameters.
 #define LearningRate 0.1f
+#define ErrorLimit 0.5f //sum(y_i - output_i)
+#define ErrorLimitPresentage 0.3f //30% of the images from the Mnist test were not recognized.
 
 //Usefull MACROS.
 #define STR(x) #x
 #define PRINT(x) std::cout << x << std::endl;
 #define PRINT_EMPTY_LINE std::cout << std::endl;
+#define FSM for(;;)
+#define STATE(x) x:
+#define NEXT_STATE(x) goto x;
 //======================================
 
 #endif // !_INCLUDER_LIB_

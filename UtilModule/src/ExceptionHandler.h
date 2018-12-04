@@ -53,6 +53,13 @@ namespace exceptionh {
 		explicit Excep_No2(const std::string& message) { std::cout << message << std::endl; };
 	};
 
+	//loading 5000 images for testing.
+	class Excep_No3 : public std::exception
+	{
+	public:
+		explicit Excep_No3(const char* message) { std::cout << message << std::endl; };
+		explicit Excep_No3(const std::string& message) { std::cout << message << std::endl; };
+	};
 }
 
 #endif

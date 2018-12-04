@@ -185,3 +185,15 @@ void FC_layer::IsTraining(bool training)
 {
 	this->Training_ = training;
 }
+
+void FC_layer::SaveWeight()
+{
+	unsigned int r_size = this->Weight_Matrix_->GetRowSize();
+	unsigned int c_size = this->Weight_Matrix_->GetColSize();
+	std::string tmp(STR(FC_layer_weights_size_));
+	tmp.append(STR(r_size));
+	tmp.append(STR(x));
+	tmp.append(STR(c_size));
+	tmp.append(STR(.txt));
+	this->Weight_Matrix_->SaveMatrix(tmp);
+}

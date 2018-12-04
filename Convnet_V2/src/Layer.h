@@ -41,6 +41,7 @@ public:
 	GMat::shared_vector& GetStackOfImgs();
 	void ResizeOutput(unsigned int Sheet);
 	virtual void Simulate() = 0;
+	virtual void SaveWeight() = 0;
 	std::string& LayerClassification() const;
 
 protected:
@@ -68,6 +69,7 @@ public:
 	GMat::Matrix* GetWeightMatrix() const;
 	void CalculateNewWeights(int average);
 	void Simulate();
+	void SaveWeight();
 	void BP(Layer& layer_i, Layer& layer_k, GMat::unique_vector& gradient_k);
 
 protected:
@@ -113,6 +115,7 @@ public:
 	void BP(Layer& layer_i, Layer& layer_k, GMat::Matrix& gradient_k);//backpropagation
 	void Printlayer() const;
 	void IsTraining(bool training);
+	void SaveWeight();
 
 protected:
 
@@ -134,6 +137,7 @@ public:
 	void SetImage(const std::string& file_dir_ = "");
 	void Load_Mnist_Data(const std::string& file_dir, int Number_of_img = 1000);
 	virtual void Simulate();
+	virtual void SaveWeight();
 
 protected:
 
@@ -159,6 +163,7 @@ public:
 	GMat::shared_vector* GetFilters();
 	virtual void Simulate();
 	void BP(Layer& layer_i, Layer& layer_k, GMat::unique_vector& gradient_k);
+	void SaveWeight();
 
 protected:
 

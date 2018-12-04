@@ -49,6 +49,17 @@ void Pool_layer::Simulate()
 	}
 }
 
+void Pool_layer::SaveWeight()
+{
+	unsigned int r_size = this->Weight_Matrix_->GetRowSize();
+	unsigned int c_size = this->Weight_Matrix_->GetColSize();
+	std::string tmp(STR(Pool_layer_weights_size_));
+	tmp.append(STR(r_size));
+	tmp.append(STR(x));
+	tmp.append(STR(c_size));
+	tmp.append(STR(.txt));
+	this->Weight_Matrix_->SaveMatrix(tmp);
+}
 
 void Pool_layer::BP(Layer& layer_i, Layer& layer_k, GMat::unique_vector& gradient_k)
 {

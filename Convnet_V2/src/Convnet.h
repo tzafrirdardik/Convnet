@@ -31,6 +31,7 @@ public:
 	void SaveWeightsToDataFile();
 	void LoadWeightsFromDataFile();
 	void GenerateExpectedOutput(const std::vector<float>& numbers);
+	bool TotalError() const;
 
 	void PrintConvnetTopology() const;
 	void PrintResult(const std::vector<float>& number, unsigned int epoch = 1, unsigned int Subepoch = 1) const;
@@ -38,6 +39,7 @@ public:
 
 protected:
 
+	bool						Total_Error_In_Presentage_;
 	unsigned int				Size_;
 	std::vector<Layer*>*		Layer_list_;
 	std::vector<std::string>*	Topology_;
